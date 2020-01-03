@@ -8,6 +8,7 @@ const middleware = require('./utils/middleware')
 // ********************************************************** app.use start
 app.use(cors())
 app.use(bodyParser.json())
+app.use(middleware.requestLogger)
 
 app.use('/api/blogs', blogsRouter)
 

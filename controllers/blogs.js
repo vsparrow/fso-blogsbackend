@@ -9,15 +9,12 @@ const blogs = [      {_id: '5a422aa71b54a676234d17f8',
       __v: 0}]
 
 // ********************************************************** ROUTING start
-blogsRouter.get('/', (request, response) => {
-  
+blogsRouter.get('/', (request, response) => {  
 	response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response) => {
-  
-	const blog = request.body
-	console.log(blog)
+blogsRouter.post('/', async (request, response) => {  
+	const blog = request.body	
 	await blogs.push(blog)
 	response.status(201).json(blog)
 })
