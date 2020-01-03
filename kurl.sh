@@ -25,4 +25,14 @@ then
 	echo "GET BLOGS"
 	curl http://localhost:3003/api/blogs
 	echo
+elif [ $1 = "unknown" ] # GET some unknown endpoint 
+then
+	echo
+	echo "TEST unknownEndpoint"
+	curl http://localhost:3003/somerandomroute
+	echo
+else 
+	echo
+	echo "kurl ?  for more information on how to use"
+	echo
 fi
