@@ -1,4 +1,9 @@
-if [ $1 = "position" ]
+if [ -z "$1" ] || [ $1 = "?" ] || [ $1 = "help" ]
+then
+	echo
+	echo "GET BLOGS: kurl gb"
+	echo "POST BLOG: kurl pb"
+elif [ $1 = "position" ]
 then
 	echo "Positional Parameters"
 	echo '$0 = ' $0
