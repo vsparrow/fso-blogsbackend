@@ -10,12 +10,14 @@ then
 	echo
 	echo "GET BLOGS"
 	curl http://localhost:3003/api/blogs
-elif [ $1 = "pb" ] # GET /api/blogs
+	echo
+elif [ $1 = "pb" ] # POST /api/blogs
 then
 	echo
 	echo "POST BLOGS"
 	curl http://localhost:3003/api/blogs -X POST --header "Content-Type:application/json" -d '{"title":"sometitle"}'	
 	echo
 	echo "GET BLOGS"
-	curl http://localhost:3003/api/blogs	
+	curl http://localhost:3003/api/blogs
+	echo
 fi
