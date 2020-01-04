@@ -40,6 +40,14 @@ describe("POST BLOG", () => {
 		const blogs = await helper.blogsInDb()
 		expect(blogs.length).toBe(helper.initialBlogs.length + 1)
 	})
+	
+	test("posts without a likes key is set to zero", async () => {
+		const blog = helper.singleBlog
+		delete blog.likes
+		expect(blog.likes).toBeUndefined()
+		const result = await api.post('/api/blogs').send(blog)
+		expect(result.body.likes).toBe(0)
+	})
 })
 
 afterAll(() => mongoose.connection.close())
