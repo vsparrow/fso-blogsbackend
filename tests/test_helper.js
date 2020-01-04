@@ -7,10 +7,16 @@ const blogsInDb = async () => {
 }
 
 const seedBlogs = async () => {
-	// const promiseArray =  initialBlogs.forEach(blog => { const b = new Blog(blog); b.save()  })	
 	const blogObjects = initialBlogs.map(blog => new Blog(blog))
 	const promiseArray = blogObjects.map(b=>b.save())
 	await Promise.all(promiseArray)
 }
 
-module.exports = {initialBlogs, blogsInDb, seedBlogs}
+const singleBlog = {
+  title: "Canonical string reduction",
+  author: "Edsger W. Dijkstra",
+  url: "http://www.github.com",	
+  likes: 12
+}
+
+module.exports = {initialBlogs, blogsInDb, seedBlogs, singleBlog}
