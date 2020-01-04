@@ -21,7 +21,7 @@ elif [ $1 = "pb" ] # POST /api/blogs
 then
 	echo
 	echo "POST BLOGS"
-	curl http://localhost:3003/api/blogs -X POST --header "Content-Type:application/json" -d '{"title":"sometitle"}'	
+	curl http://localhost:3003/api/blogs -X POST --header "Content-Type:application/json" -d '{"title":"no_title", "author":"no_author", "url":"no_url"}'	
 	echo
 	echo "GET BLOGS"
 	curl http://localhost:3003/api/blogs
