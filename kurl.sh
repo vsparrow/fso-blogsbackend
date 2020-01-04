@@ -3,6 +3,7 @@ then
 	echo
 	echo "GET BLOGS: kurl gb"
 	echo "POST BLOG: kurl pb"
+	echo "unknown endpoint: kurl u"
 elif [ $1 = "position" ]
 then
 	echo "Positional Parameters"
@@ -25,7 +26,7 @@ then
 	echo "GET BLOGS"
 	curl http://localhost:3003/api/blogs
 	echo
-elif [ $1 = "unknown" ] # GET some unknown endpoint 
+elif [ $1 = "u" ] # GET some unknown endpoint 
 then
 	echo
 	echo "TEST unknownEndpoint"
