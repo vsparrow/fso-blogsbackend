@@ -1,4 +1,5 @@
 const blogsRouter = require('express').Router()
+const Blog = require('../models/blog')
 
 // ********************************************************** variables and helper functions
 const blogs = [      {_id: '5a422aa71b54a676234d17f8',
@@ -9,8 +10,11 @@ const blogs = [      {_id: '5a422aa71b54a676234d17f8',
       __v: 0}]
 
 // ********************************************************** ROUTING start
-blogsRouter.get('/', (request, response) => {  
-	response.json(blogs)
+blogsRouter.get('/', async (request, response, next) => {  
+	try{
+		const blogs = await Blog.find({})
+		response.json(blogs)
+	} catch(exception){	next(exception)	}	
 })
 
 blogsRouter.post('/', async (request, response) => {  
