@@ -32,7 +32,7 @@ describe("POST BLOG", () => {
 	test("can post a blog", async () => {
 		await api.post('/api/blogs').send(helper.singleBlog).expect(201).expect('Content-Type', /application\/json/)
 		const blogs = await helper.blogsInDb()
-		expect(JSON.stringify(blogs)).toContain(helper.singleBlog.title)	
+		expect(JSON.stringify(blogs)).toContain(helper.singleBlog.title)	//we could also map the title
 	})
 
 	test("count of blogs increaed by one", async () => {
@@ -47,6 +47,16 @@ describe("POST BLOG", () => {
 		expect(blog.likes).toBeUndefined()
 		const result = await api.post('/api/blogs').send(blog)
 		expect(result.body.likes).toBe(0)
+	})
+	
+	test("posts without title or url are rejected", async () => {
+		let blog = helper.singleBlog
+		delete blog.title
+		await api.post('/api/blogs').send(blog).expect(400)
+
+		blog = helper.singleBlog
+		delete blog.url
+		await api.post('/api/blogs').send(blog).expect(400)
 	})
 })
 
