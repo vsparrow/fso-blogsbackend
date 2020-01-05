@@ -27,6 +27,18 @@ describe("GET BLOGS", () => {
 	})
 })
 
+describe("GET BLOG", () => {
+	test('can get a blog using a valid id', async () => {
+		const blogs = await helper.blogsInDb()
+		const blog = blogs[0]
+		const result = await api.get(`/api/blogs/${blog.id}`).expect(200).expect('Content-Type', /application\/json/)
+		expect(result.body.id).toEqual(blog.id)
+		expect(result.body.url).toEqual(blog.url)
+		expect(result.body.author).toEqual(blog.author)
+		expect(result.body.likes).toEqual(blog.likes)
+	})
+})
+
 describe("POST BLOG", () => {
 	
 	test("can post a blog", async () => {

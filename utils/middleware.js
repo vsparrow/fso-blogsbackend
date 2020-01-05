@@ -13,8 +13,12 @@ const unknownEndpoint = (request,response) => {
 	response.status(404).send({error: 'unknown endpoint'})
 }
 
-const errorHandler = (error, request, response, next) => {
+const errorHandler = (error, request, response, next) => { 
+	if(error.name === 'CastError' && error.kind === 'ObjectId'){ return response.status(400).json({error: "malformed id"})}
 	console.log(error)
+	console.log("*********************************")
+	
+	
 	logger.error(error.message)
 	next(error)
 }

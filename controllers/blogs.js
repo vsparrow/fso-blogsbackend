@@ -11,6 +11,15 @@ blogsRouter.get('/', async (request, response, next) => {
 	} catch(exception){	next(exception)	}	
 })
 
+blogsRouter.get('/:id', async (request,response,next) => {
+	try{
+		const id = request.params.id
+		const blog = await Blog.findById(id)
+		if(blog){response.json(blog.toJSON())}
+		else{ response.status(404).end()}		
+	} catch(exception) { next(exception) }
+})
+
 blogsRouter.post('/',  async (request, response, next) => {  
 	try{
 		const body = request.body
