@@ -85,6 +85,7 @@ describe("POST BLOG", () => {
 })
 
 describe("DELETE BLOG", () => {
+	
 	test('succeeds with status code 204 if id is valid', async () => {
 		let blogInput={title: "title to delete", url: "no url", author: "no author"}
 		const result = await api.post('/api/blogs').send(blogInput)
@@ -97,6 +98,15 @@ describe("DELETE BLOG", () => {
 		const titles = blogs.map(b => b.title)
 		expect(titles.includes(blog.title)).toEqual(false)
 	})
+	
+	test("delete returns 400 if id is invalid", async () => {
+		let blogs = await helper.blogsInDb()
+		let id = blogs[0].id
+		let badId = id.slice(1)
+		await api.delete(`/api/blogs/${badId}`).expect(400)
+	})
+	
+	//test for id valid length but not exist - add after adding user auth
 })
 
 afterAll(() => mongoose.connection.close())
