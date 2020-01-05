@@ -1,6 +1,6 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-
+const logger = require('../utils/logger')
 // ********************************************************** variables and helper functions
 
 // ********************************************************** ROUTING start
@@ -33,6 +33,13 @@ blogsRouter.post('/',  async (request, response, next) => {
 		const result = await newBlog.save()
 		response.status(201).json(result.toJSON())		
 	} catch(exception) { next(exception) }	
+})
+
+blogsRouter.delete('/:id', async (request,response,next) => {
+	const id = request.params.id
+	const result  = await Blog.findOneAndDelete({_id: id})
+	logger.info("Record deleted", result)
+	response.status(204).end()
 })
 
 

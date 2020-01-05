@@ -27,7 +27,7 @@ describe("GET BLOGS", () => {
 	})
 })
 
-describe("GET BLOG", () => {
+describe("GET BLOG (single)", () => {
 	test('can get a blog using a valid id', async () => {
 		const blogs = await helper.blogsInDb()
 		const blog = blogs[0]
