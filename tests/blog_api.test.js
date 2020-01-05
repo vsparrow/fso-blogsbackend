@@ -37,6 +37,18 @@ describe("GET BLOG", () => {
 		expect(result.body.author).toEqual(blog.author)
 		expect(result.body.likes).toEqual(blog.likes)
 	})
+	
+	test('an id of improper length gives an error', async () => {
+		const result = await api.get('/api/blogs/100').expect(400).expect('Content-Type', /application\/json/)
+		expect(result.body.error).toBe('malformed id')
+	})
+	
+	test('an id that does not exist returns a 404', async () => {
+		const blogs = await helper.blogsInDb()
+		let id = blogs[0].id
+		let badid = "a" + id.slice(1) // 
+		const result = await api.get(`/api/blogs/${badid}`).expect(404)
+	})
 })
 
 describe("POST BLOG", () => {
