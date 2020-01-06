@@ -1,5 +1,6 @@
 const Blog = require('../models/blog')
 const initialBlogs = require('./initialBlogs')
+const User = require('../models/user')
 
 const blogsInDb = async () => {
 	const blogs = await Blog.find({})
@@ -19,4 +20,24 @@ const singleBlog = () =>  {return {
   likes: 12
 }}
 
-module.exports = {initialBlogs, blogsInDb, seedBlogs, singleBlog}
+// **************************************************
+const initialUsers = () => {return [
+	{username: "rmcdonald", name: "Ronald McDonald", password:"hamburger"},
+	{username: "wendys", name: "miss wendy", password:"frosty"}
+]}
+
+const seedUsers = async () => {
+	const userObjects = initialUsers().map(u => new User(u))
+	const promiseArray = userObjects.map(u => u.save())
+	await Promise.all(promiseArray)
+}
+
+const singleUser = () => { return {username:"dominos", name:"dominos pizza", password: "delivery"}}
+
+
+const usersInDb = async () => {
+	const users = await User.find({})
+	return users.map(u => u.toJSON())
+} 
+
+module.exports = {initialBlogs, blogsInDb, seedBlogs, singleBlog, initialUsers, seedUsers, singleUser, usersInDb}
