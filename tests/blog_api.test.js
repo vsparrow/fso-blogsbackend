@@ -54,19 +54,21 @@ describe("GET BLOG (single)", () => {
 describe("POST BLOG", () => {
 	
 	test("can post a blog", async () => {
-		await api.post('/api/blogs').send(helper.singleBlog).expect(201).expect('Content-Type', /application\/json/)
+		const singleBlog = helper.singleBlog()
+		await api.post('/api/blogs').send(singleBlog).expect(201).expect('Content-Type', /application\/json/)
 		const blogs = await helper.blogsInDb()
-		expect(JSON.stringify(blogs)).toContain(helper.singleBlog.title)	//we could also map the title
+		expect(JSON.stringify(blogs)).toContain(singleBlog.title)	//we could also map the title
 	})
 
 	test("count of blogs increaed by one", async () => {
-		await api.post('/api/blogs').send(helper.singleBlog)
+		const singleBlog = helper.singleBlog()
+		await api.post('/api/blogs').send(singleBlog)
 		const blogs = await helper.blogsInDb()
 		expect(blogs.length).toBe(helper.initialBlogs.length + 1)
 	})
 	
 	test("posts without a likes key is set to zero", async () => {
-		const blog = helper.singleBlog
+		const blog = helper.singleBlog()
 		delete blog.likes
 		expect(blog.likes).toBeUndefined()
 		const result = await api.post('/api/blogs').send(blog)
@@ -74,11 +76,11 @@ describe("POST BLOG", () => {
 	})
 	
 	test("posts without title or url are rejected", async () => {
-		let blog = helper.singleBlog
+		let blog = helper.singleBlog()
 		delete blog.title
 		await api.post('/api/blogs').send(blog).expect(400)
 
-		blog = helper.singleBlog
+		blog = helper.singleBlog()
 		delete blog.url
 		await api.post('/api/blogs').send(blog).expect(400)
 	})
@@ -107,6 +109,53 @@ describe("DELETE BLOG", () => {
 	})
 	
 	//test for id valid length but not exist - add after adding user auth
-})
+}) //delete
+
+describe("PUT", () => {
+	test("a blog can be updated", async () => {
+		const blogs = await helper.blogsInDb()
+		const blog = blogs[0]
+		const id = blog.id
+		const singleBlog = helper.singleBlog()
+		const result = await api.put(`/api/blogs/${id}`).send(singleBlog).expect(200).expect("Content-Type", /application\/json/)
+		const newBlog = (await api.get(`/api/blogs/${id}`)).body
+
+			
+		expect(newBlog.title).toBe(singleBlog.title)
+		expect(newBlog.url).toBe(singleBlog.url)
+		expect(newBlog.author).toBe(singleBlog.author)
+		expect(newBlog.likes).toBe(singleBlog.likes)							
+		
+		expect(newBlog.title).not.toBe(blog.title)
+		expect(newBlog.url).not.toBe(blog.url)
+		expect(newBlog.author).not.toBe(blog.author)
+		expect(newBlog.likes).not.toBe(blog.likes)
+	})
+	
+	test("blog update without title or url cannot be updated", async () => {
+		const blogs = await helper.blogsInDb()
+		const blog = blogs[0]
+		const id = blog.id
+		
+		let newData = helper.singleBlog()
+		delete newData.title
+		await api.put(`/api/blogs/${id}`).send(newData).expect(400)
+		
+		newData = helper.singleBlog()
+		delete newData.url
+		await api.put(`/api/blogs/${id}`).send(newData).expect(400)		
+	})
+	
+	test("blog update without likes has it set to 0", async () => {
+		const blogs = await helper.blogsInDb()
+		const blog = blogs[0]
+		const id = blog.id
+		
+		let newData = helper.singleBlog()
+		delete newData.likes
+		const result = (await api.put(`/api/blogs/${id}`).send(newData).expect(200).expect('Content-Type', /application\/json/)).body
+		expect(result.likes).toBe(0)
+	})
+}) //put
 
 afterAll(() => mongoose.connection.close())

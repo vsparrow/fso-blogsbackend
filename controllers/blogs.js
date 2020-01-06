@@ -48,7 +48,7 @@ blogsRouter.put('/:id', async (request,response,next) => {
 	try{
 		const id = request.params.id
 		const body = request.body
-		if(!body.title || !body.url) {return response.send(400).json({error: "title and url required"})}
+		if(!body.title || !body.url) {return response.status(400).json({error: "title and url required"})}
 		const updatedBlog = {title: body.title, url: body.url, author: body.author, likes: body.likes || 0}
 		const result = await Blog.findByIdAndUpdate(id, updatedBlog, {new: true})
 		response.json(result)

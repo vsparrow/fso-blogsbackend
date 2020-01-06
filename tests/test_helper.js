@@ -12,11 +12,11 @@ const seedBlogs = async () => {
 	await Promise.all(promiseArray)
 }
 
-const singleBlog = {
-  title: "Canonical string reduction",
-  author: "Edsger W. Dijkstra",
-  url: "http://www.github.com",	
+const singleBlog = () =>  {return {
+  title: "Singleblog string reduction",
+  author: "Edsger W. Single",
+  url: "http://single.github.com",	
   likes: 12
-}
+}}
 
 module.exports = {initialBlogs, blogsInDb, seedBlogs, singleBlog}
