@@ -114,16 +114,13 @@ describe("DELETE BLOG", () => {
 	test("user's blog array updated after blog delete", async () => {
 		const blog = helper.singleBlog()
 		blog.userId = await helper.getAUserId()
-		// console.log(blog)
 		//post blog
 		const postedBlog = (await api.post('/api/blogs').send(blog)).body
 		const blogId = postedBlog.id
-		// console.log(postedBlog)
 		//delete blog
 		await api.delete(`/api/blogs/${blogId}`).expect(204)
 		//cehck to see if user blog array does not contain id
 		const user = await User.findById(blog.userId)
-		// console.log(user)
 		expect(JSON.stringify(user.blogs)).not.toContain(blogId)
 	})
 	
@@ -143,6 +140,7 @@ describe("PUT", () => {
 		const blog = blogs[0]
 		const id = blog.id
 		const singleBlog = helper.singleBlog()
+		singleBlog.likes = 10000000
 		const result = await api.put(`/api/blogs/${id}`).send(singleBlog).expect(200).expect("Content-Type", /application\/json/)
 		const newBlog = (await api.get(`/api/blogs/${id}`)).body
 

@@ -24,7 +24,6 @@ blogsRouter.get('/:id', async (request,response,next) => {
 blogsRouter.post('/',  async (request, response, next) => {  
 		const body = request.body
 		const user = await User.findById(body.userId)
-		// console.log("*****************user is", user)
 		const newBlog =  new Blog({			
 			title: body.title, 
 			author: body.author, 
@@ -35,7 +34,6 @@ blogsRouter.post('/',  async (request, response, next) => {
 	try{
 		if(!body.title || !body.url) { return response.status(400).json({error : "title and url required"})}
 		const result = await newBlog.save()
-		// console.log("***********result is", result)
 		user.blogs = user.blogs.concat(result._id)
 		await user.save()
 		response.status(201).json(result.toJSON())		
@@ -43,23 +41,16 @@ blogsRouter.post('/',  async (request, response, next) => {
 })
 
 blogsRouter.delete('/:id', async (request,response,next) => {
-	try{ //something wrong after makeingchanges, fix this
+	try{ 
 		const id = request.params.id
 		const blog = (await Blog.findById(id))
-		// console.log(blog)
 		const userId = blog.user
-		// console.log("user id is ",userId)
 		const result  = await Blog.findOneAndDelete({_id: id})
-		//************************
 		// remove the blog id from user's blog array' ***************************
 		const user = await User.findById(userId)
-		// console.log("user.blogs before:", user.blogs)
 		const updatedUserBlogs = user.blogs.filter(b => b != id)
-		// console.log("updatedUserBlogs.length is now",updatedUserBlogs)
 		user.blogs = updatedUserBlogs
 		await user.save()
-		// console.log(user)
-		// console.log(updatedUserBlogs.length)
 		//************************
 		logger.info("Record deleted", result)
 		response.status(204).end()				
