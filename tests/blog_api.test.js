@@ -2,11 +2,13 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require("./test_helper")
 const api = supertest(app)
 
 beforeEach(async ()=> {
 	await Blog.deleteMany({})
+	await User.deleteMany({})
 	await helper.seedBlogs()
 })
 
@@ -55,12 +57,13 @@ describe("POST BLOG", () => {
 	
 	test("can post a blog", async () => {
 		const singleBlog = helper.singleBlog()
+		singleBlog.userId = await helper.getAUserId()
 		await api.post('/api/blogs').send(singleBlog).expect(201).expect('Content-Type', /application\/json/)
 		const blogs = await helper.blogsInDb()
 		expect(JSON.stringify(blogs)).toContain(singleBlog.title)	//we could also map the title
 	})
 
-	test("count of blogs increaed by one", async () => {
+	test("count of blogs increased by one", async () => {
 		const singleBlog = helper.singleBlog()
 		await api.post('/api/blogs').send(singleBlog)
 		const blogs = await helper.blogsInDb()

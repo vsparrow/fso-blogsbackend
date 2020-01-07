@@ -34,10 +34,15 @@ const seedUsers = async () => {
 
 const singleUser = () => { return {username:"dominos", name:"dominos pizza", password: "delivery"}}
 
-
 const usersInDb = async () => {
 	const users = await User.find({})
 	return users.map(u => u.toJSON())
 } 
 
-module.exports = {initialBlogs, blogsInDb, seedBlogs, singleBlog, initialUsers, seedUsers, singleUser, usersInDb}
+const getAUserId = async () => {
+	const user = await new User(singleUser()).save()
+	// return JSON.stringify(user._id)
+	return user._id
+}
+
+module.exports = {initialBlogs, blogsInDb, seedBlogs, singleBlog, initialUsers, seedUsers, singleUser, usersInDb, getAUserId}
