@@ -65,6 +65,7 @@ describe("POST BLOG", () => {
 
 	test("count of blogs increased by one", async () => {
 		const singleBlog = helper.singleBlog()
+		singleBlog.userId = await helper.getAUserId()		
 		await api.post('/api/blogs').send(singleBlog)
 		const blogs = await helper.blogsInDb()
 		expect(blogs.length).toBe(helper.initialBlogs.length + 1)
@@ -74,6 +75,7 @@ describe("POST BLOG", () => {
 		const blog = helper.singleBlog()
 		delete blog.likes
 		expect(blog.likes).toBeUndefined()
+		blog.userId = await helper.getAUserId()		
 		const result = await api.post('/api/blogs').send(blog)
 		expect(result.body.likes).toBe(0)
 	})
@@ -81,10 +83,13 @@ describe("POST BLOG", () => {
 	test("posts without title or url are rejected", async () => {
 		let blog = helper.singleBlog()
 		delete blog.title
+		const userId = await helper.getAUserId()
+		blog.userId = userId		
 		await api.post('/api/blogs').send(blog).expect(400)
 
 		blog = helper.singleBlog()
 		delete blog.url
+		blog.userId = userId		
 		await api.post('/api/blogs').send(blog).expect(400)
 	})
 })
@@ -93,6 +98,7 @@ describe("DELETE BLOG", () => {
 	
 	test('succeeds with status code 204 if id is valid', async () => {
 		let blogInput={title: "title to delete", url: "no url", author: "no author"}
+		blogInput.userId = await helper.getAUserId()		
 		const result = await api.post('/api/blogs').send(blogInput)
 		const blog = result.body
 		let blogs = await helper.blogsInDb()
