@@ -98,7 +98,8 @@ describe("DELETE BLOG", () => {
 	
 	test('succeeds with status code 204 if id is valid', async () => {
 		let blogInput={title: "title to delete", url: "no url", author: "no author"}
-		blogInput.userId = await helper.getAUserId()		
+		const userId = await helper.getAUserId()
+		blogInput.userId = 	userId	
 		const result = await api.post('/api/blogs').send(blogInput)
 		const blog = result.body
 		let blogs = await helper.blogsInDb()
@@ -108,6 +109,22 @@ describe("DELETE BLOG", () => {
 		expect(blogs.length).toBe(helper.initialBlogs.length)
 		const titles = blogs.map(b => b.title)
 		expect(titles.includes(blog.title)).toEqual(false)
+	})
+	
+	test("user's blog array updated after blog delete", async () => {
+		const blog = helper.singleBlog()
+		blog.userId = await helper.getAUserId()
+		// console.log(blog)
+		//post blog
+		const postedBlog = (await api.post('/api/blogs').send(blog)).body
+		const blogId = postedBlog.id
+		// console.log(postedBlog)
+		//delete blog
+		await api.delete(`/api/blogs/${blogId}`).expect(204)
+		//cehck to see if user blog array does not contain id
+		const user = await User.findById(blog.userId)
+		// console.log(user)
+		expect(JSON.stringify(user.blogs)).not.toContain(blogId)
 	})
 	
 	test("delete returns 400 if id is invalid", async () => {
