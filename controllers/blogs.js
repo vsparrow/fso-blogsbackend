@@ -1,12 +1,13 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const logger = require('../utils/logger')
 // ********************************************************** variables and helper functions
 
 // ********************************************************** ROUTING start
 blogsRouter.get('/', async (request, response, next) => {  
 	try{
-		const blogs = await Blog.find({})
+		const blogs = await Blog.find({}).populate('user', {username: 1, name: 1})
 		response.json(blogs)
 	} catch(exception){	next(exception)	}	
 })
@@ -21,16 +22,22 @@ blogsRouter.get('/:id', async (request,response,next) => {
 })
 
 blogsRouter.post('/',  async (request, response, next) => {  
-	try{
 		const body = request.body
-		if(!body.title || !body.url) { return response.status(400).json({error : "title and url required"})}
+		const user = await User.findById(body.userId)
+		console.log("*****************user is", user)
 		const newBlog =  new Blog({			
 			title: body.title, 
 			author: body.author, 
 			url: body.url, 
-			likes: body.likes || 0
-		})
+			likes: body.likes || 0,
+			user: user._id
+		})		
+	try{
+		if(!body.title || !body.url) { return response.status(400).json({error : "title and url required"})}
 		const result = await newBlog.save()
+		console.log("***********result is", result)
+		user.blogs = user.blogs.concat(result._id)
+		await user.save()
 		response.status(201).json(result.toJSON())		
 	} catch(exception) { next(exception) }	
 })
