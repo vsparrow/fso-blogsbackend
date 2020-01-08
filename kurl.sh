@@ -3,6 +3,7 @@ then
 	echo
 	echo "GET BLOGS: kurl gb"
 	echo "POST BLOG: kurl pb"
+	echo "POST LOGIN: kurl li"
 	echo "unknown endpoint: kurl u"
 elif [ $1 = "position" ]
 then
@@ -41,6 +42,17 @@ then
 	echo
 	echo "GET USERS"
 	curl http://localhost:3003/api/users
+	echo
+# ********************************	
+elif [ $1 = "li" ] # POST /api/login
+then
+	echo
+	echo "POST LOGIN"
+	output=$(curl http://localhost:3003/api/login -X POST --header "Content-Type:application/json" -d '{"username":"username001",  "password":"avengers"}')	
+	echo "$output"
+	echo
+	echo "token is:"
+	echo "$output"  | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]'
 	echo
 # ********************************	
 elif [ $1 = "u" ] # GET some unknown endpoint 
