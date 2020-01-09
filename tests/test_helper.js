@@ -45,4 +45,8 @@ const getAUserId = async () => {
 	return user._id
 }
 
+// const getAToken = async () => {
+// 	await api.get('/api/users')
+// }
+
 module.exports = {initialBlogs, blogsInDb, seedBlogs, singleBlog, initialUsers, seedUsers, singleUser, usersInDb, getAUserId}

@@ -5,11 +5,18 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const helper = require("./test_helper")
 const api = supertest(app)
-
+let token = ''
 beforeEach(async ()=> {
+	jest.setTimeout(10000)
+	token = ''
 	await Blog.deleteMany({})
 	await User.deleteMany({})
 	await helper.seedBlogs()
+	//create a user
+	let user = helper.singleUser()
+	await api.post('/api/users').send(user)
+	let login = (await api.post('/api/login').send(user)).body
+	token = login.token
 })
 
 describe("GET BLOGS", () => {
@@ -57,8 +64,8 @@ describe("POST BLOG", () => {
 	
 	test("can post a blog", async () => {
 		const singleBlog = helper.singleBlog()
-		singleBlog.userId = await helper.getAUserId()
-		await api.post('/api/blogs').send(singleBlog).expect(201).expect('Content-Type', /application\/json/)
+		singleBlog.token = 'Authorization: Bearer '+ token
+		const posting = await api.post('/api/blogs').set('Authorization', "Bearer "+token).send(singleBlog).expect(201).expect('Content-Type', /application\/json/)
 		const blogs = await helper.blogsInDb()
 		expect(JSON.stringify(blogs)).toContain(singleBlog.title)	//we could also map the title
 	})
