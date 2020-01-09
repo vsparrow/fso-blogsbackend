@@ -22,6 +22,22 @@ describe('POST Login', ()=>{
 		const result = await api.post(url).send(userData).expect(200).expect("Content-Type", /application\/json/)
 		expect(result.body).toHaveProperty("token")
 	})
+	
+	test('bad password returns error', async ()=>{
+		const user = await helper.singleUser()
+		const userData = {username: user.username, password: user.password + 'a'}
+		const result = await api.post(url).send(userData).expect(401).expect("Content-Type", /application\/json/)
+		expect(result.body).not.toHaveProperty("token")		
+		expect(result.body).toHaveProperty("error")		
+	})
+	test('invalid username returns error', async ()=>{
+		const user = await helper.singleUser()
+		const userData = {username: user.username+'a', password: user.password}
+		const result = await api.post(url).send(userData).expect(401).expect("Content-Type", /application\/json/)
+		expect(result.body).not.toHaveProperty("token")		
+		expect(result.body).toHaveProperty("error")		
+	})	
+	
 })	
 
 afterAll(() => mongoose.connection.close())
