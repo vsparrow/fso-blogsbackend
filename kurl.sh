@@ -22,7 +22,7 @@ elif [ $1 = "pb" ] # POST /api/blogs
 then
 	echo
 	echo "POST BLOGS"
-	curl http://localhost:3003/api/blogs -X POST --header "Content-Type:application/json" -d '{"title":"no_title", "author":"no_author", "url":"no_url", "userId": "5e13ddcc43a2c20ae79ecd36"}'	
+	curl http://localhost:3003/api/blogs -X POST --header "Content-Type:application/json" -d '{"title":"jwt_title3", "author":"jwt_author3", "url":"jwt_url3"}' -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJuYW1lMDAxIiwiaWQiOiI1ZTEzZGRjYzQzYTJjMjBhZTc5ZWNkMzYiLCJpYXQiOjE1Nzg1ODAyODl9.vTjXaogG3OP4qonjCgOLVsi-iAwoNAiGOkXOVYCIaaY"	
 	echo
 	echo "GET BLOGS"
 	curl http://localhost:3003/api/blogs
