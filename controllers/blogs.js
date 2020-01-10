@@ -55,9 +55,27 @@ blogsRouter.post('/',  async (request, response, next) => {
 
 blogsRouter.delete('/:id', async (request,response,next) => {
 	try{ 
+		//make sure token valid
+		const token = request.token
+		if(!token){return response.status(401).json({error: 'token missing'})}
+		const decodedToken = jwt.verify(request.token,process.env.SECRET)
+		if(!decodedToken.id){return response.status(401).json({error: 'token invalid'})}
+		/////
 		const id = request.params.id
 		const blog = (await Blog.findById(id))
 		const userId = blog.user
+		////////////
+		// if blog owner ! = token user id 
+		if(blog.user != decodedToken.id){
+			return response.status(401).json({error: "not authorized"})
+			console.log("error here!!!!!!!!!!!!!")
+			console.log("blog.user",blog.user)
+			console.log("decodedToken.id",decodedToken.id)
+		}else{
+			console.log("SUCCCCCCCCCCCCCCCCESS")
+		}
+		// return error
+		////////////
 		const result  = await Blog.findOneAndDelete({_id: id})
 		// remove the blog id from user's blog array' ***************************
 		const user = await User.findById(userId)

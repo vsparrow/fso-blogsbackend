@@ -126,9 +126,19 @@ describe("DELETE BLOG", () => {
 		let blogs = await helper.blogsInDb()
 		let id = blogs[0].id
 		let badId = id.slice(1)
-		await api.delete(`/api/blogs/${badId}`).expect(400)
+		await api.delete(`/api/blogs/${badId}`).set('Authorization', "Bearer "+token).expect(400)
 	})
 	
+	test('delete returns 401 if token is missing or invalid', async ()=>{
+		const blog = helper.singleBlog()
+		const postedBlog = (await api.post('/api/blogs').set('Authorization', "Bearer "+token).send(blog)).body
+		const blogId = postedBlog.id
+		await api.delete(`/api/blogs/${blogId}`).expect(401)		
+		let newToken = token.slice(1)+"a"
+		
+		await api.delete(`/api/blogs/${blogId}`).set('Authorization', "Bearer "+newToken).expect(401)		
+		
+	})
 	//test for id valid length but not exist - add after adding user auth
 }) //delete
 
