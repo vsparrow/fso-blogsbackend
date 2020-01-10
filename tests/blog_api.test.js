@@ -60,8 +60,7 @@ describe("GET BLOG (single)", () => {
 	})
 })
 
-describe("POST BLOG", () => {
-	
+describe("POST BLOG", () => {	
 	test("can post a blog", async () => {
 		const singleBlog = helper.singleBlog()
 		const posting = await api.post('/api/blogs').set('Authorization', "Bearer "+token).send(singleBlog).expect(201).expect('Content-Type', /application\/json/)
@@ -113,14 +112,12 @@ describe("DELETE BLOG", () => {
 	
 	test("user's blog array updated after blog delete", async () => {
 		const blog = helper.singleBlog()
-		// blog.userId = await helper.getAUserId()
 		//post blog
 		const postedBlog = (await api.post('/api/blogs').set('Authorization', "Bearer "+token).send(blog)).body
 		const blogId = postedBlog.id
 		//delete blog
 		await api.delete(`/api/blogs/${blogId}`).set('Authorization', "Bearer "+token).expect(204)
 		//cehck to see if user blog array does not contain id
-		// const user = await User.findById(blog.userId)
 		const user = await User.findOne({username: await helper.singleUser().username})
 		expect(JSON.stringify(user.blogs)).not.toContain(blogId)
 	})
