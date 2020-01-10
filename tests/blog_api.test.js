@@ -64,7 +64,6 @@ describe("POST BLOG", () => {
 	
 	test("can post a blog", async () => {
 		const singleBlog = helper.singleBlog()
-		singleBlog.token = 'Authorization: Bearer '+ token
 		const posting = await api.post('/api/blogs').set('Authorization', "Bearer "+token).send(singleBlog).expect(201).expect('Content-Type', /application\/json/)
 		const blogs = await helper.blogsInDb()
 		expect(JSON.stringify(blogs)).toContain(singleBlog.title)	//we could also map the title
@@ -72,8 +71,8 @@ describe("POST BLOG", () => {
 
 	test("count of blogs increased by one", async () => {
 		const singleBlog = helper.singleBlog()
-		singleBlog.userId = await helper.getAUserId()		
-		await api.post('/api/blogs').send(singleBlog)
+		await api.post('/api/blogs').set('Authorization', "Bearer "+token).send(singleBlog).expect(201).expect('Content-Type', /application\/json/)
+
 		const blogs = await helper.blogsInDb()
 		expect(blogs.length).toBe(helper.initialBlogs.length + 1)
 	})
@@ -82,36 +81,30 @@ describe("POST BLOG", () => {
 		const blog = helper.singleBlog()
 		delete blog.likes
 		expect(blog.likes).toBeUndefined()
-		blog.userId = await helper.getAUserId()		
-		const result = await api.post('/api/blogs').send(blog)
+		const result = await api.post('/api/blogs').set('Authorization', "Bearer "+token).send(blog)
 		expect(result.body.likes).toBe(0)
 	})
 	
 	test("posts without title or url are rejected", async () => {
 		let blog = helper.singleBlog()
 		delete blog.title
-		const userId = await helper.getAUserId()
-		blog.userId = userId		
-		await api.post('/api/blogs').send(blog).expect(400)
+		await api.post('/api/blogs').set('Authorization', "Bearer "+token).send(blog).expect(400)
 
 		blog = helper.singleBlog()
 		delete blog.url
-		blog.userId = userId		
-		await api.post('/api/blogs').send(blog).expect(400)
+		await api.post('/api/blogs').set('Authorization', "Bearer "+token).send(blog).expect(400)
 	})
 })
 
 describe("DELETE BLOG", () => {
 	
-	test('succeeds with status code 204 if id is valid', async () => {
+	test('succeeds with status code 204 if token is valid', async () => {
 		let blogInput={title: "title to delete", url: "no url", author: "no author"}
-		const userId = await helper.getAUserId()
-		blogInput.userId = 	userId	
-		const result = await api.post('/api/blogs').send(blogInput)
+		const result = await api.post('/api/blogs').set('Authorization', "Bearer "+token).send(blogInput)
 		const blog = result.body
 		let blogs = await helper.blogsInDb()
 		expect(blogs.length).toBe(helper.initialBlogs.length + 1)
-		await api.delete(`/api/blogs/${blog.id}`).expect(204)
+		await api.delete(`/api/blogs/${blog.id}`).set('Authorization', "Bearer "+token).expect(204)
 		blogs = await helper.blogsInDb()
 		expect(blogs.length).toBe(helper.initialBlogs.length)
 		const titles = blogs.map(b => b.title)
@@ -120,14 +113,15 @@ describe("DELETE BLOG", () => {
 	
 	test("user's blog array updated after blog delete", async () => {
 		const blog = helper.singleBlog()
-		blog.userId = await helper.getAUserId()
+		// blog.userId = await helper.getAUserId()
 		//post blog
-		const postedBlog = (await api.post('/api/blogs').send(blog)).body
+		const postedBlog = (await api.post('/api/blogs').set('Authorization', "Bearer "+token).send(blog)).body
 		const blogId = postedBlog.id
 		//delete blog
-		await api.delete(`/api/blogs/${blogId}`).expect(204)
+		await api.delete(`/api/blogs/${blogId}`).set('Authorization', "Bearer "+token).expect(204)
 		//cehck to see if user blog array does not contain id
-		const user = await User.findById(blog.userId)
+		// const user = await User.findById(blog.userId)
+		const user = await User.findOne({username: await helper.singleUser().username})
 		expect(JSON.stringify(user.blogs)).not.toContain(blogId)
 	})
 	
