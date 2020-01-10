@@ -4,12 +4,6 @@ const User = require('../models/user')
 const logger = require('../utils/logger')
 const jwt = require('jsonwebtoken')
 // ********************************************************** variables and helper functions
-// getTokenFrom = request => {
-// 	const authorization = request.get('authorization')
-// 	if(authorization && authorization.toLowerCase().startsWith('bearer'))
-// 	{return authorization.substring(7)}
-// 	return null
-// }
 
 // ********************************************************** ROUTING start
 blogsRouter.get('/', async (request, response, next) => {  
@@ -30,7 +24,6 @@ blogsRouter.get('/:id', async (request,response,next) => {
 
 blogsRouter.post('/',  async (request, response, next) => {  
 		const body = request.body
-		// const token = getTokenFrom(request)
 		const token = request.token
 		if(!token){return response.status(401).json({error: 'token missing'})}
 		try{
@@ -44,7 +37,6 @@ blogsRouter.post('/',  async (request, response, next) => {
 			likes: body.likes || 0,
 			user: user._id
 		})		
-	// try{
 		if(!body.title || !body.url) { return response.status(400).json({error : "title and url required"})}
 		const savedBlog = await blog.save()
 		user.blogs = user.blogs.concat(savedBlog._id)
@@ -65,16 +57,9 @@ blogsRouter.delete('/:id', async (request,response,next) => {
 		const blog = (await Blog.findById(id))
 		const userId = blog.user
 		////////////
-		// if blog owner ! = token user id 
 		if(blog.user != decodedToken.id){
 			return response.status(401).json({error: "not authorized"})
-			console.log("error here!!!!!!!!!!!!!")
-			console.log("blog.user",blog.user)
-			console.log("decodedToken.id",decodedToken.id)
-		}else{
-			console.log("SUCCCCCCCCCCCCCCCCESS")
 		}
-		// return error
 		////////////
 		const result  = await Blog.findOneAndDelete({_id: id})
 		// remove the blog id from user's blog array' ***************************
@@ -88,6 +73,7 @@ blogsRouter.delete('/:id', async (request,response,next) => {
 	} catch(exception) { next(exception) }
 })
 
+//update this route to use the auth token
 blogsRouter.put('/:id', async (request,response,next) => {
 	try{
 		const id = request.params.id
