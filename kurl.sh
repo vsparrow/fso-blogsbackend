@@ -39,7 +39,7 @@ elif [ $1 = "pu" ] # POST /api/blogs
 then
 	echo
 	echo "POST USERS"
-	curl http://localhost:3003/api/users -X POST --header "Content-Type:application/json" -d '{"username":"username001", "name":"steve rogers", "password":"avengers"}'	
+	curl http://localhost:3003/api/users -X POST --header "Content-Type:application/json" -d '{"username":"username003", "name":"tony hawk", "password":"avengers"}'	
 	echo
 	echo "GET USERS"
 	curl http://localhost:3003/api/users
